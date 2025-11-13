@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════════
+  ✅ GIT CONFIGURADO COM SUCESSO!
+═══════════════════════════════════════════════════════════════
+
+O repositório Git já está inicializado e conectado ao GitHub!
+
+═══════════════════════════════════════════════════════════════
+  🚀 COMO SINCRONIZAR AGORA
+═══════════════════════════════════════════════════════════════
+
+ESCOLHA UMA DAS OPÇÕES:
+
+┌─────────────────────────────────────────────────────────────┐
+│ OPÇÃO 1: GitHub Desktop (MAIS FÁCIL)                       │
+└─────────────────────────────────────────────────────────────┘
+
+1. Baixe e instale: https://desktop.github.com/
+2. Faça login com sua conta GitHub (BarbaNegraBR)
+3. Abra o GitHub Desktop
+4. File → Add Local Repository
+5. Selecione esta pasta:
+   C:\Users\jose\Downloads\aplicações\calculadora mecânica
+6. Clique em "Add Repository"
+7. Pronto! Agora você verá todas as mudanças automaticamente
+
+Para sincronizar:
+- Faça suas alterações
+- Abra GitHub Desktop
+- Veja as mudanças
+- Escreva mensagem de commit
+- Clique em "Commit to main"
+- Clique em "Push origin"
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ OPÇÃO 2: Extensão Git do Cursor/VS Code                    │
+└─────────────────────────────────────────────────────────────┘
+
+1. Abra o Cursor nesta pasta
+2. Pressione Ctrl+Shift+G (ou clique no ícone de Source Control)
+3. Você verá todas as mudanças automaticamente
+4. Clique no + ao lado dos arquivos para adicionar
+5. Escreva uma mensagem de commit
+6. Clique no ✓ (Commit)
+7. Clique em ... → Push
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ OPÇÃO 3: Terminal (PowerShell)                             │
+└─────────────────────────────────────────────────────────────┘
+
+Para fazer o primeiro commit:
+  git add .
+  git commit -m "Configuração inicial"
+  git branch -M main
+  git push -u origin main
+
+Para commits futuros:
+  git add .
+  git commit -m "Sua mensagem aqui"
+  git push
+
+
+═══════════════════════════════════════════════════════════════
+  📋 FLUXO DE TRABALHO
+═══════════════════════════════════════════════════════════════
+
+1. Faça alterações no código
+2. Compile: build_executavel.bat
+3. Atualize versao.json com nova versão
+4. Sincronize (commit + push) usando uma das opções acima
+5. Crie Release no GitHub:
+   https://github.com/BarbaNegraBR/atualiza-o-mec-nica/releases/new
+
+
+═══════════════════════════════════════════════════════════════
+  ✅ STATUS ATUAL
+═══════════════════════════════════════════════════════════════
+
+✓ Repositório Git inicializado
+✓ Remote configurado: https://github.com/BarbaNegraBR/atualiza-o-mec-nica.git
+✓ .gitignore criado
+
+Próximo passo: Fazer o primeiro commit e push!
+
