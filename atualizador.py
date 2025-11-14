@@ -19,7 +19,7 @@ class AtualizadorApp:
         # Configurações do repositório
         self.usuario_github = "BarbaNegraBR"
         self.repositorio = "atualiza-o-mec-nica"
-        self.versao_atual = "v1.0.4"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json
+        self.versao_atual = "1.0.4"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json (SEM o "v")
         
         # URLs
         self.url_versao = f"https://raw.githubusercontent.com/{self.usuario_github}/{self.repositorio}/master/versao.json"
@@ -32,6 +32,8 @@ class AtualizadorApp:
             if response.status_code == 200:
                 dados = response.json()
                 versao_remota = dados.get('versao', '0.0.0')
+                # Remover "v" se houver
+                versao_remota = versao_remota.lstrip('v')
                 
                 if self.comparar_versoes(versao_remota, self.versao_atual):
                     return True, versao_remota, dados.get('changelog', ''), dados.get('url_download', '')
@@ -43,12 +45,96 @@ class AtualizadorApp:
             print(f"Erro inesperado: {e}")
             return False, None, None, None
     
+    def verificar_atualizacao_completo(self):
+        """Verifica atualização com informações detalhadas para debug"""
+        try:
+            # Verificar versão no GitHub
+            response = requests.get(self.url_versao, timeout=10)
+            if response.status_code != 200:
+                return False, {
+                    'erro': f'Erro ao acessar versao.json (Status {response.status_code})',
+                    'detalhes': f'URL: {self.url_versao}'
+                }
+            
+            dados = response.json()
+            versao_remota = dados.get('versao', '0.0.0')
+            versao_remota = versao_remota.lstrip('v')  # Remover "v" se houver
+            
+            # Verificar se há atualização
+            tem_atualizacao = self.comparar_versoes(versao_remota, self.versao_atual)
+            
+            # Verificar se o arquivo existe na release
+            arquivo_existe = False
+            url_download = None
+            
+            if tem_atualizacao:
+                # Tentar diferentes formatos de tag
+                tags_possiveis = [
+                    f"v{versao_remota}",
+                    versao_remota,
+                    f"V{versao_remota}"
+                ]
+                
+                for tag in tags_possiveis:
+                    url_teste = f"{self.url_download_base}/{tag}/Calculadora_Reparos_Palomino.exe"
+                    try:
+                        resp = requests.head(url_teste, timeout=5, allow_redirects=True)
+                        if resp.status_code == 200:
+                            arquivo_existe = True
+                            url_download = url_teste
+                            break
+                    except:
+                        continue
+                
+                # Se não encontrou, tentar última release
+                if not arquivo_existe:
+                    try:
+                        ultima_release = self.verificar_ultima_release()
+                        url_teste = f"{self.url_download_base}/{ultima_release}/Calculadora_Reparos_Palomino.exe"
+                        resp = requests.head(url_teste, timeout=5, allow_redirects=True)
+                        if resp.status_code == 200:
+                            arquivo_existe = True
+                            url_download = url_teste
+                    except:
+                        pass
+            
+            return True, {
+                'tem_atualizacao': tem_atualizacao,
+                'versao_atual': self.versao_atual,
+                'versao_remota': versao_remota,
+                'changelog': dados.get('changelog', ''),
+                'url_download': url_download,
+                'arquivo_existe': arquivo_existe,
+                'url_versao': self.url_versao
+            }
+            
+        except requests.exceptions.Timeout:
+            return False, {
+                'erro': 'Timeout ao verificar atualização',
+                'detalhes': 'Verifique sua conexão com a internet'
+            }
+        except requests.exceptions.RequestException as e:
+            return False, {
+                'erro': f'Erro de conexão: {str(e)}',
+                'detalhes': f'URL: {self.url_versao}'
+            }
+        except Exception as e:
+            return False, {
+                'erro': f'Erro inesperado: {str(e)}',
+                'detalhes': f'Tipo: {type(e).__name__}'
+            }
+    
     def comparar_versoes(self, versao_remota, versao_atual):
         """Compara duas versões (formato: X.Y.Z)"""
         def versao_para_numero(v):
             try:
+                # Remover "v" se houver
+                v = str(v).lstrip('vV')
                 partes = v.split('.')
-                return tuple(int(p) for p in partes)
+                # Garantir 3 partes (major.minor.patch)
+                while len(partes) < 3:
+                    partes.append('0')
+                return tuple(int(p) for p in partes[:3])
             except:
                 return (0, 0, 0)
         

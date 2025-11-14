@@ -100,11 +100,22 @@ class CalculadoraReparosGUI:
         main_frame.columnconfigure(1, weight=1)
         main_frame.rowconfigure(2, weight=1)
         
-        # Título
-        title_label = ttk.Label(main_frame, 
+        # Título com botão de atualização
+        title_frame = ttk.Frame(main_frame)
+        title_frame.grid(row=0, column=0, columnspan=2, pady=(0, 20), sticky=(tk.W, tk.E))
+        title_frame.columnconfigure(0, weight=1)
+        
+        title_label = ttk.Label(title_frame, 
                                text="🔧 CALCULADORA DE REPAROS 🔧",
                                style='Title.TLabel')
-        title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        title_label.grid(row=0, column=0, sticky=tk.W)
+        
+        # Botão verificar atualizações
+        self.btn_atualizar = ttk.Button(title_frame, 
+                                        text="🔄 Verificar Atualizações",
+                                        command=self.verificar_atualizacoes_manual,
+                                        style='Custom.TButton')
+        self.btn_atualizar.grid(row=0, column=1, sticky=tk.E, padx=(10, 0))
         
         # Frame esquerdo - Seleção de itens
         left_frame = ttk.LabelFrame(main_frame, text="Selecionar Itens", padding="10")
@@ -443,6 +454,68 @@ class CalculadoraReparosGUI:
                 print(f"Erro ao verificar atualizações: {e}")
         
         threading.Thread(target=check, daemon=True).start()
+    
+    def verificar_atualizacoes_manual(self):
+        """Verifica atualizações manualmente (botão)"""
+        # Desabilitar botão durante verificação
+        self.btn_atualizar.config(state='disabled', text="🔄 Verificando...")
+        
+        def check():
+            try:
+                atualizador = AtualizadorApp()
+                resultado = atualizador.verificar_atualizacao_completo()
+                
+                self.root.after(0, lambda: self.processar_resultado_verificacao(resultado, atualizador))
+            except Exception as e:
+                self.root.after(0, lambda: self.mostrar_erro_verificacao(f"Erro: {e}"))
+        
+        threading.Thread(target=check, daemon=True).start()
+    
+    def processar_resultado_verificacao(self, resultado, atualizador):
+        """Processa o resultado da verificação"""
+        self.btn_atualizar.config(state='normal', text="🔄 Verificar Atualizações")
+        
+        sucesso, dados = resultado
+        
+        if not sucesso:
+            # Mostrar erro detalhado
+            erro = dados.get('erro', 'Erro desconhecido')
+            detalhes = dados.get('detalhes', '')
+            self.mostrar_erro_verificacao(erro, detalhes)
+            return
+        
+        # Verificar se há atualização
+        tem_atualizacao = dados.get('tem_atualizacao', False)
+        versao_remota = dados.get('versao_remota', '')
+        versao_atual = dados.get('versao_atual', '')
+        changelog = dados.get('changelog', '')
+        url_download = dados.get('url_download', '')
+        arquivo_existe = dados.get('arquivo_existe', False)
+        
+        if tem_atualizacao:
+            if arquivo_existe:
+                self.mostrar_dialogo_atualizacao(versao_remota, changelog, atualizador, url_download)
+            else:
+                messagebox.showwarning(
+                    "Atualização Disponível",
+                    f"Versão {versao_remota} disponível!\n\n"
+                    f"Porém, o arquivo executável não foi encontrado na release.\n\n"
+                    f"Verifique se o arquivo foi enviado corretamente na release do GitHub."
+                )
+        else:
+            messagebox.showinfo(
+                "Atualização",
+                f"Você está usando a versão mais recente!\n\n"
+                f"Versão atual: {versao_atual}\n"
+                f"Versão no GitHub: {versao_remota}"
+            )
+    
+    def mostrar_erro_verificacao(self, erro, detalhes=""):
+        """Mostra erro na verificação"""
+        mensagem = f"Erro ao verificar atualizações:\n\n{erro}"
+        if detalhes:
+            mensagem += f"\n\nDetalhes:\n{detalhes}"
+        messagebox.showerror("Erro", mensagem)
     
     def mostrar_dialogo_atualizacao(self, versao, changelog, atualizador, url_download):
         """Mostra diálogo de atualização"""
