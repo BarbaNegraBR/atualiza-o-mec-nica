@@ -22,7 +22,7 @@ class AtualizadorApp:
         self.versao_atual = "1.0.2"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json
         
         # URLs
-        self.url_versao = f"https://raw.githubusercontent.com/{self.usuario_github}/{self.repositorio}/main/versao.json"
+        self.url_versao = f"https://raw.githubusercontent.com/{self.usuario_github}/{self.repositorio}/master/versao.json"
         self.url_download_base = f"https://github.com/{self.usuario_github}/{self.repositorio}/releases/download"
         
     def verificar_atualizacao(self):
