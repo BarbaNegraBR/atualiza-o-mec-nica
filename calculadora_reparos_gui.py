@@ -222,7 +222,7 @@ class CalculadoraReparosGUI:
         self.total_label.grid(row=0, column=1, sticky=tk.E)
         
         # Valor do baú (50% do total)
-        ttk.Label(total_frame, text="BAÚ (50%):", style='Header.TLabel').grid(row=1, column=0, sticky=tk.W, pady=(5, 0))
+        ttk.Label(total_frame, text="Valor da Mecânica:", style='Header.TLabel').grid(row=1, column=0, sticky=tk.W, pady=(5, 0))
         self.bau_var = tk.StringVar(value="$ 0,00")
         self.bau_label = ttk.Label(total_frame, textvariable=self.bau_var, 
                                   font=('Arial', 12, 'bold'),
@@ -408,7 +408,7 @@ class CalculadoraReparosGUI:
             relatorio += f"DESCONTO (10%): -$ {desconto_valor:,.0f}\n"
         
         relatorio += f"TOTAL GERAL: $ {total:,.0f}\n"
-        relatorio += f"BAÚ (50%): $ {valor_bau:,.0f}\n"
+        relatorio += f"Valor da Mecânica: $ {valor_bau:,.0f}\n"
         relatorio += "="*50 + "\n"
         relatorio += "Atenciosamente, Equipe Palomino."
         
@@ -478,7 +478,7 @@ class CalculadoraReparosGUI:
                 resumo += f"DESCONTO (10%): -$ {desconto_valor:,.0f}\n"
             
             resumo += f"TOTAL: $ {total_final:,.0f}\n"
-            resumo += f"BAÚ (50%): $ {valor_bau:,.0f}\n"
+            resumo += f"Valor da Mecânica: $ {valor_bau:,.0f}\n"
             resumo += "="*50
             
             messagebox.showinfo("Orçamento Final", resumo)
