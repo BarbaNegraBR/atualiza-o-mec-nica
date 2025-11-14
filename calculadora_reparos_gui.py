@@ -79,7 +79,7 @@ class CalculadoraReparosGUI:
         self.pecas = {
             "Motor": 4000,
             "Kit de Motor": 1000,
-            "kit de Reparo": 3800,
+            "kit de Reparo": 3000,
             
         }
         
