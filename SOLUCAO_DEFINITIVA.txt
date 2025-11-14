@@ -17,7 +17,7 @@ PASSO 1: COMPILAR O EXECUTÁVEL
 Execute:
   build_executavel.bat
 
-Isso cria: dist/Calculadora_Reparos_Palomino.exe
+Isso cria: dist/Calculadora_Death_Row_Garage.exe
 
 
 PASSO 2: CRIAR A RELEASE NO GITHUB (ESSENCIAL!)
@@ -30,8 +30,8 @@ PASSO 2: CRIAR A RELEASE NO GITHUB (ESSENCIAL!)
    - Description: Atualização de valores e nomes dos itens
 
 3. FAÇA UPLOAD DO EXECUTÁVEL:
-   - Arraste o arquivo: dist/Calculadora_Reparos_Palomino.exe
-   - Nome do arquivo na release: Calculadora_Reparos_Palomino.exe
+   - Arraste o arquivo: dist/Calculadora_Death_Row_Garage.exe
+   - Nome do arquivo na release: Calculadora_Death_Row_Garage.exe
 
 4. Clique em "Publish release"
 

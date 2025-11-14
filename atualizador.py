@@ -76,7 +76,7 @@ class AtualizadorApp:
                 ]
                 
                 for tag in tags_possiveis:
-                    url_teste = f"{self.url_download_base}/{tag}/Calculadora_Reparos_Palomino.exe"
+                    url_teste = f"{self.url_download_base}/{tag}/Calculadora_Death_Row_Garage.exe"
                     try:
                         resp = requests.head(url_teste, timeout=5, allow_redirects=True)
                         if resp.status_code == 200:
@@ -106,7 +106,7 @@ class AtualizadorApp:
                                 if self.comparar_versoes(tag_limpa, self.versao_atual):
                                     # Tentar diferentes formatos
                                     for formato_tag in [tag, f"v{tag_limpa}", tag_limpa]:
-                                        url_teste = f"{self.url_download_base}/{formato_tag}/Calculadora_Reparos_Palomino.exe"
+                                        url_teste = f"{self.url_download_base}/{formato_tag}/Calculadora_Death_Row_Garage.exe"
                                         try:
                                             resp = requests.head(url_teste, timeout=5, allow_redirects=True)
                                             if resp.status_code == 200:
@@ -168,13 +168,13 @@ class AtualizadorApp:
         try:
             # Se não tiver URL específica, usar a última release
             if not url_download:
-                url_download = f"{self.url_download_base}/v{self.verificar_ultima_release()}/Calculadora_Reparos_Palomino.exe"
+                url_download = f"{self.url_download_base}/v{self.verificar_ultima_release()}/Calculadora_Death_Row_Garage.exe"
             
             # Criar pasta temporária
             temp_dir = Path(os.environ.get('TEMP', '.')) / 'calculadora_update'
             temp_dir.mkdir(exist_ok=True)
             
-            arquivo_novo = temp_dir / 'Calculadora_Reparos_Palomino_novo.exe'
+            arquivo_novo = temp_dir / 'Calculadora_Death_Row_Garage_novo.exe'
             
             # Baixar novo executável
             print(f"Baixando atualização de: {url_download}")

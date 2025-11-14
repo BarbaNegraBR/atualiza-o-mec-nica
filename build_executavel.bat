@@ -12,9 +12,9 @@ IF EXIST "Pngtre.png" IF NOT EXIST "Pngtre.ico" (
 
 
 echo Criando executavel...
-pyinstaller --onefile --windowed --icon "Pngtre.ico" --name "Calculadora_Reparos_Palomino" calculadora_reparos_gui.py
+pyinstaller --onefile --windowed --icon "Pngtre.ico" --name "Calculadora_Death_Row_Garage" calculadora_reparos_gui.py
 
 echo.
-echo Executavel criado em: dist\Calculadora_Reparos_Palomino.exe
+echo Executavel criado em: dist\Calculadora_Death_Row_Garage.exe
 echo.
 pause

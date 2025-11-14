@@ -42,7 +42,7 @@ PASSO 2: COMPILAR O EXECUTÁVEL
 Execute:
   build_executavel.bat
 
-Isso cria: dist/Calculadora_Reparos_Palomino.exe
+Isso cria: dist/Calculadora_Death_Row_Garage.exe
 
 
 PASSO 3: ANEXAR EXECUTÁVEL NA RELEASE 1.0.5
@@ -50,7 +50,7 @@ PASSO 3: ANEXAR EXECUTÁVEL NA RELEASE 1.0.5
 1. Acesse: https://github.com/BarbaNegraBR/atualiza-o-mec-nica/releases
 2. Clique no lápis (editar) da release 1.0.5
 3. Na seção "Attach binaries by dropping them here or selecting them"
-4. Arraste o arquivo: dist/Calculadora_Reparos_Palomino.exe
+4. Arraste o arquivo: dist/Calculadora_Death_Row_Garage.exe
 5. Clique em "Update release"
 
 

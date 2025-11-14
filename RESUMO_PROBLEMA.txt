@@ -24,7 +24,7 @@
    Execute no terminal:
    build_executavel.bat
    
-   Isso vai criar: dist/Calculadora_Reparos_Palomino.exe
+   Isso vai criar: dist/Calculadora_Death_Row_Garage.exe
    (com os novos valores que você colocou)
 
 
@@ -38,9 +38,9 @@
    - Description: Atualização de valores e nomes dos itens
    
    IMPORTANTE: Faça upload do arquivo:
-   dist/Calculadora_Reparos_Palomino.exe
+   dist/Calculadora_Death_Row_Garage.exe
    
-   Nome do arquivo na release: Calculadora_Reparos_Palomino.exe
+   Nome do arquivo na release: Calculadora_Death_Row_Garage.exe
    
    Clique em "Publish release"
 

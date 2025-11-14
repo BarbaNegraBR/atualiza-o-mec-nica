@@ -78,7 +78,7 @@ def testar_atualizacao():
     
     print(f"\n3. Verificando URL de download...")
     versao_github = dados.get('versao', '1.0.2')
-    url_download = f"https://github.com/{usuario}/{repositorio}/releases/download/v{versao_github}/Calculadora_Reparos_Palomino.exe"
+    url_download = f"https://github.com/{usuario}/{repositorio}/releases/download/v{versao_github}/Calculadora_Death_Row_Garage.exe"
     print(f"   URL esperada: {url_download}")
     
     try:
@@ -91,7 +91,7 @@ def testar_atualizacao():
             print(f"   ⚠️  Verifique se:")
             print(f"      - A release foi criada com a tag: v{versao_github}")
             print(f"      - O arquivo foi enviado na release")
-            print(f"      - O nome do arquivo é: Calculadora_Reparos_Palomino.exe")
+            print(f"      - O nome do arquivo é: Calculadora_Death_Row_Garage.exe")
         else:
             print(f"   ⚠️  Status: {response.status_code}")
     except Exception as e:
