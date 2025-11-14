@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Calculadora de Reparos - Equipe Palomino
+Calculadora de Reparos - Equipe Death Row Garage
 Aplicativo com interface gráfica para calcular custos de reparos automotivos
 """
 
@@ -19,7 +19,7 @@ except ImportError:
 class CalculadoraReparosGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Calculadora de Reparos - Equipe Palomino")
+        self.root.title("Calculadora de Reparos - Equipe Death Row Garage")
         self.root.geometry("900x700")
         self.root.configure(bg='#2c3e50')
         self.root.resizable(True, True)
@@ -393,7 +393,7 @@ class CalculadoraReparosGUI:
         
         # Criar relatório
         relatorio = "="*50 + "\n"
-        relatorio += "    ORÇAMENTO DE REPAROS - EQUIPE PALOMINO\n"
+        relatorio += "    ORÇAMENTO DE REPAROS - EQUIPE Death Row Garage\n"
         relatorio += "="*50 + "\n\n"
         
         for item in self.carrinho:
@@ -410,7 +410,7 @@ class CalculadoraReparosGUI:
         relatorio += f"TOTAL GERAL: $ {total:,.0f}\n"
         relatorio += f"Valor da Mecânica: $ {valor_bau:,.0f}\n"
         relatorio += "="*50 + "\n"
-        relatorio += "Atenciosamente, Equipe Palomino."
+        relatorio += "Atenciosamente, Equipe Death Row Garage."
         
         # Mostrar relatório
         messagebox.showinfo("Orçamento Calculado", relatorio)
@@ -513,7 +513,7 @@ class CalculadoraReparosGUI:
         """Atualiza a exibição da tabela de preços"""
         self.precos_text.delete(1.0, tk.END)
         
-        tabela = "TABELA DE PREÇOS - EQUIPE PALOMINO\n"
+        tabela = "TABELA DE PREÇOS - EQUIPE Death Row Garage\n"
         tabela += "="*50 + "\n\n"
         
         # Peças individuais
