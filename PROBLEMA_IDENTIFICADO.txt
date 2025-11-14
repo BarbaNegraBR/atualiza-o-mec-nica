@@ -1,0 +1,75 @@
+═══════════════════════════════════════════════════════════════
+  🔍 PROBLEMA IDENTIFICADO
+═══════════════════════════════════════════════════════════════
+
+PROBLEMA 1: versao.json não sincronizado
+───────────────────────────────────────────────────────────────
+❌ O versao.json no GitHub ainda está em 1.0.4
+✅ O versao.json local está em 1.0.5
+⚠️  Você precisa fazer commit e push do versao.json atualizado!
+
+
+PROBLEMA 2: Executável não anexado nas releases
+───────────────────────────────────────────────────────────────
+❌ Nenhuma release tem o arquivo .exe anexado
+⚠️  As releases só têm os arquivos de código-fonte (zip, tar.gz)
+⚠️  O sistema precisa do .exe para fazer o download
+
+
+PROBLEMA 3: Versão do aplicativo antigo
+───────────────────────────────────────────────────────────────
+✅ Seu PC tem: 1.0.4.1
+✅ GitHub tem: 1.0.5 (no código local, mas não sincronizado)
+⚠️  O aplicativo antigo não detecta porque o versao.json no GitHub
+    ainda está em 1.0.4
+
+
+═══════════════════════════════════════════════════════════════
+  🚀 SOLUÇÃO COMPLETA (FAÇA NESTA ORDEM):
+═══════════════════════════════════════════════════════════════
+
+PASSO 1: SINCRONIZAR versao.json
+───────────────────────────────────────────────────────────────
+1. Use GitHub Desktop ou extensão do editor
+2. Faça commit do versao.json (que está em 1.0.5)
+3. Faça push para o GitHub
+4. Verifique se atualizou:
+   https://raw.githubusercontent.com/BarbaNegraBR/atualiza-o-mec-nica/master/versao.json
+
+
+PASSO 2: COMPILAR O EXECUTÁVEL
+───────────────────────────────────────────────────────────────
+Execute:
+  build_executavel.bat
+
+Isso cria: dist/Calculadora_Reparos_Palomino.exe
+
+
+PASSO 3: ANEXAR EXECUTÁVEL NA RELEASE 1.0.5
+───────────────────────────────────────────────────────────────
+1. Acesse: https://github.com/BarbaNegraBR/atualiza-o-mec-nica/releases
+2. Clique no lápis (editar) da release 1.0.5
+3. Na seção "Attach binaries by dropping them here or selecting them"
+4. Arraste o arquivo: dist/Calculadora_Reparos_Palomino.exe
+5. Clique em "Update release"
+
+
+PASSO 4: TESTAR
+───────────────────────────────────────────────────────────────
+1. Abra o aplicativo antigo (versão 1.0.4.1)
+2. Clique no botão "🔄 Verificar Atualizações"
+3. Deve detectar a versão 1.0.5 e oferecer para atualizar
+
+
+═══════════════════════════════════════════════════════════════
+  ✅ MELHORIAS FEITAS NO CÓDIGO:
+═══════════════════════════════════════════════════════════════
+
+✅ Sistema agora busca em TODAS as releases disponíveis
+✅ Tenta diferentes formatos de tag (v1.0.5, 1.0.5, V1.0.5)
+✅ Verifica releases mais recentes primeiro
+✅ Melhor tratamento de erros
+
+
+═══════════════════════════════════════════════════════════════
+

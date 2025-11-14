@@ -86,17 +86,40 @@ class AtualizadorApp:
                     except:
                         continue
                 
-                # Se não encontrou, tentar última release
+                # Se não encontrou, buscar em todas as releases disponíveis
                 if not arquivo_existe:
                     try:
-                        ultima_release = self.verificar_ultima_release()
-                        url_teste = f"{self.url_download_base}/{ultima_release}/Calculadora_Reparos_Palomino.exe"
-                        resp = requests.head(url_teste, timeout=5, allow_redirects=True)
-                        if resp.status_code == 200:
-                            arquivo_existe = True
-                            url_download = url_teste
-                    except:
-                        pass
+                        url_releases = f"https://api.github.com/repos/{self.usuario_github}/{self.repositorio}/releases"
+                        resp_releases = requests.get(url_releases, timeout=10)
+                        if resp_releases.status_code == 200:
+                            releases = resp_releases.json()
+                            # Ordenar por data (mais recente primeiro)
+                            releases.sort(key=lambda x: x.get('published_at', ''), reverse=True)
+                            
+                            # Tentar cada release até encontrar o arquivo
+                            for release in releases:
+                                tag = release.get('tag_name', '')
+                                # Remover "v" se houver para comparar
+                                tag_limpa = tag.lstrip('vV')
+                                
+                                # Verificar se esta release é mais nova que a atual
+                                if self.comparar_versoes(tag_limpa, self.versao_atual):
+                                    # Tentar diferentes formatos
+                                    for formato_tag in [tag, f"v{tag_limpa}", tag_limpa]:
+                                        url_teste = f"{self.url_download_base}/{formato_tag}/Calculadora_Reparos_Palomino.exe"
+                                        try:
+                                            resp = requests.head(url_teste, timeout=5, allow_redirects=True)
+                                            if resp.status_code == 200:
+                                                arquivo_existe = True
+                                                url_download = url_teste
+                                                break
+                                        except:
+                                            continue
+                                    
+                                    if arquivo_existe:
+                                        break
+                    except Exception as e:
+                        print(f"Erro ao buscar releases: {e}")
             
             return True, {
                 'tem_atualizacao': tem_atualizacao,
@@ -185,7 +208,8 @@ class AtualizadorApp:
             response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                return data.get('tag_name', 'latest').lstrip('v')
+                tag = data.get('tag_name', 'latest')
+                return tag.lstrip('vV')
             return 'latest'
         except:
             return 'latest'

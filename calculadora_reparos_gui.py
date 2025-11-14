@@ -446,10 +446,29 @@ class CalculadoraReparosGUI:
         def check():
             try:
                 atualizador = AtualizadorApp()
-                tem_atualizacao, versao, changelog, url_download = atualizador.verificar_atualizacao()
-                if tem_atualizacao:
+                resultado = atualizador.verificar_atualizacao_completo()
+                
+                sucesso, dados = resultado
+                
+                if not sucesso:
+                    # Erro na verificação - não mostrar nada ao usuário (silencioso)
+                    print(f"Erro ao verificar atualizações: {dados.get('erro', 'Erro desconhecido')}")
+                    return
+                
+                # Verificar se há atualização
+                tem_atualizacao = dados.get('tem_atualizacao', False)
+                versao_remota = dados.get('versao_remota', '')
+                changelog = dados.get('changelog', '')
+                url_download = dados.get('url_download', '')
+                arquivo_existe = dados.get('arquivo_existe', False)
+                
+                if tem_atualizacao and arquivo_existe:
+                    # Mostrar diálogo de atualização
                     self.root.after(0, lambda: self.mostrar_dialogo_atualizacao(
-                        versao, changelog, atualizador, url_download))
+                        versao_remota, changelog, atualizador, url_download))
+                elif tem_atualizacao and not arquivo_existe:
+                    # Há atualização mas arquivo não encontrado - não mostrar (silencioso)
+                    print(f"Atualização {versao_remota} disponível mas arquivo não encontrado na release")
             except Exception as e:
                 print(f"Erro ao verificar atualizações: {e}")
         
