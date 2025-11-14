@@ -29,6 +29,7 @@ class CalculadoraReparosGUI:
         
         # Dados
         self.carrinho = []
+        self.desconto_ativo = False  # Controla se desconto de 10% está ativo
         self.setup_data()
         
         # Interface
@@ -166,10 +167,15 @@ class CalculadoraReparosGUI:
                                command=self.adicionar_item, style='Custom.TButton')
         add_button.grid(row=8, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         
+        # Botão desconto
+        self.btn_desconto = ttk.Button(left_frame, text="🎁 Aplicar Desconto 10%", 
+                                       command=self.toggle_desconto, style='Custom.TButton')
+        self.btn_desconto.grid(row=9, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
+        
         # Botão limpar carrinho
         clear_button = ttk.Button(left_frame, text="🗑️ Limpar Carrinho", 
                                  command=self.limpar_carrinho, style='Custom.TButton')
-        clear_button.grid(row=9, column=0, sticky=(tk.W, tk.E))
+        clear_button.grid(row=10, column=0, sticky=(tk.W, tk.E))
         
         # Frame direito - Carrinho e total
         right_frame = ttk.LabelFrame(main_frame, text="Carrinho de Compras", padding="10")
@@ -215,10 +221,18 @@ class CalculadoraReparosGUI:
                                    foreground='#e74c3c')
         self.total_label.grid(row=0, column=1, sticky=tk.E)
         
+        # Valor do baú (50% do total)
+        ttk.Label(total_frame, text="BAÚ (50%):", style='Header.TLabel').grid(row=1, column=0, sticky=tk.W, pady=(5, 0))
+        self.bau_var = tk.StringVar(value="$ 0,00")
+        self.bau_label = ttk.Label(total_frame, textvariable=self.bau_var, 
+                                  font=('Arial', 12, 'bold'),
+                                  foreground='#3498db')
+        self.bau_label.grid(row=1, column=1, sticky=tk.E, pady=(5, 0))
+        
         # Botão calcular
         calc_button = ttk.Button(total_frame, text="💰 Calcular Total", 
                                 command=self.calcular_total, style='Custom.TButton')
-        calc_button.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(10, 0))
+        calc_button.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(10, 0))
         
         # Frame inferior - Tabela de preços
         bottom_frame = ttk.LabelFrame(main_frame, text="Tabela de Preços", padding="10")
@@ -348,7 +362,16 @@ class CalculadoraReparosGUI:
     def atualizar_total(self):
         """Atualiza o total do carrinho"""
         total = sum(item['subtotal'] for item in self.carrinho)
-        self.total_var.set(f"$ {total:,}")
+        
+        # Aplicar desconto de 10% se estiver ativo
+        if self.desconto_ativo:
+            total = total * 0.9  # 10% de desconto
+        
+        self.total_var.set(f"$ {total:,.0f}")
+        
+        # Calcular valor do baú (50% do total)
+        valor_bau = total * 0.5
+        self.bau_var.set(f"$ {valor_bau:,.0f}")
     
     def calcular_total(self):
         """Calcula e exibe o total final"""
@@ -356,7 +379,17 @@ class CalculadoraReparosGUI:
             messagebox.showwarning("Aviso", "Carrinho vazio!")
             return
         
-        total = sum(item['subtotal'] for item in self.carrinho)
+        total_bruto = sum(item['subtotal'] for item in self.carrinho)
+        desconto_valor = 0
+        
+        # Aplicar desconto se estiver ativo
+        if self.desconto_ativo:
+            desconto_valor = total_bruto * 0.1
+            total = total_bruto - desconto_valor
+        else:
+            total = total_bruto
+        
+        valor_bau = total * 0.5
         
         # Criar relatório
         relatorio = "="*50 + "\n"
@@ -369,7 +402,13 @@ class CalculadoraReparosGUI:
             relatorio += f"  Subtotal: $ {item['subtotal']:,}\n\n"
         
         relatorio += "-"*50 + "\n"
-        relatorio += f"TOTAL GERAL: $ {total:,}\n"
+        relatorio += f"SUBTOTAL: $ {total_bruto:,.0f}\n"
+        
+        if self.desconto_ativo:
+            relatorio += f"DESCONTO (10%): -$ {desconto_valor:,.0f}\n"
+        
+        relatorio += f"TOTAL GERAL: $ {total:,.0f}\n"
+        relatorio += f"BAÚ (50%): $ {valor_bau:,.0f}\n"
         relatorio += "="*50 + "\n"
         relatorio += "Atenciosamente, Equipe Palomino."
         
@@ -412,16 +451,63 @@ class CalculadoraReparosGUI:
         self.remover_item_selecionado()
  
     def limpar_carrinho(self):
-        """Limpa o carrinho"""
+        """Limpa o carrinho e aplica desconto se houver itens"""
         if not self.carrinho:
             messagebox.showinfo("Info", "Carrinho já está vazio!")
             return
         
+        # Calcular total antes de limpar
+        total_bruto = sum(item['subtotal'] for item in self.carrinho)
+        desconto_valor = 0
+        total_final = total_bruto
+        
+        if self.desconto_ativo:
+            desconto_valor = total_bruto * 0.1
+            total_final = total_bruto - desconto_valor
+        
+        valor_bau = total_final * 0.5
+        
         if messagebox.askyesno("Confirmar", "Deseja limpar o carrinho?"):
+            # Mostrar resumo antes de limpar
+            resumo = "="*50 + "\n"
+            resumo += "    RESUMO DO ORÇAMENTO\n"
+            resumo += "="*50 + "\n\n"
+            resumo += f"SUBTOTAL: $ {total_bruto:,.0f}\n"
+            
+            if self.desconto_ativo:
+                resumo += f"DESCONTO (10%): -$ {desconto_valor:,.0f}\n"
+            
+            resumo += f"TOTAL: $ {total_final:,.0f}\n"
+            resumo += f"BAÚ (50%): $ {valor_bau:,.0f}\n"
+            resumo += "="*50
+            
+            messagebox.showinfo("Orçamento Final", resumo)
+            
+            # Limpar carrinho
             self.carrinho = []
+            self.desconto_ativo = False  # Resetar desconto
+            self.btn_desconto.config(text="🎁 Aplicar Desconto 10%")
             self.atualizar_carrinho()
             self.atualizar_total()
             messagebox.showinfo("Sucesso", "Carrinho limpo!")
+    
+    def toggle_desconto(self):
+        """Ativa ou desativa o desconto de 10%"""
+        if not self.carrinho:
+            messagebox.showwarning("Aviso", "Adicione itens ao carrinho primeiro!")
+            return
+        
+        self.desconto_ativo = not self.desconto_ativo
+        
+        if self.desconto_ativo:
+            self.btn_desconto.config(text="❌ Remover Desconto 10%")
+            messagebox.showinfo("Desconto", "Desconto de 10% aplicado!")
+        else:
+            self.btn_desconto.config(text="🎁 Aplicar Desconto 10%")
+            messagebox.showinfo("Desconto", "Desconto removido!")
+        
+        # Atualizar total com/ sem desconto
+        self.atualizar_total()
     
     def atualizar_tabela_precos(self):
         """Atualiza a exibição da tabela de preços"""
