@@ -67,17 +67,19 @@ class CalculadoraReparosGUI:
     def setup_data(self):
         """Configura os dados de preços"""
         self.tabela_precos = {
-            "Macaco Hidraulico": 300,
-            "Cera Profissional": 300,
-            "Cera Liquida": 200,
-            "Controle de neon": 700
+            "Porta": 350,
+            "Porta-Mala": 600,
+            "capô": 850,
+            "Para-Brisa": 1200,
+            "Pneu": 500,
+            "Para-Choque": 400,
+            
         }
         
         self.pecas = {
-            "Peça Motor": 20,
-            "Peça Lataria": 25,
-            "Peça Tanque": 25,
-            "Peça Cosmetico": 120
+            "Motor": 4000,
+            "Kit de Motor": 1000,
+            "kit de Reparo": 3000,
             
         }
         
