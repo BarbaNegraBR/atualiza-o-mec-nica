@@ -19,7 +19,7 @@ class AtualizadorApp:
         # Configurações do repositório
         self.usuario_github = "BarbaNegraBR"
         self.repositorio = "atualiza-o-mec-nica"
-        self.versao_atual = "1.0.4"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json (SEM o "v")
+        self.versao_atual = "1.0.5"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json (SEM o "v")
         
         # URLs
         self.url_versao = f"https://raw.githubusercontent.com/{self.usuario_github}/{self.repositorio}/master/versao.json"
