@@ -532,13 +532,24 @@ class CalculadoraReparosGUI:
         def check():
             try:
                 atualizador = AtualizadorApp()
+                
+                # Verificar se MTA está rodando ANTES de tentar verificar atualizações
+                if atualizador.mta_esta_rodando():
+                    # Se MTA estiver rodando, não verificar atualizações automaticamente
+                    # para evitar problemas com anti-cheat
+                    print("MTA detectado. Verificação automática de atualizações cancelada para evitar ban.")
+                    return
+                
                 resultado = atualizador.verificar_atualizacao_completo()
                 
                 sucesso, dados = resultado
                 
                 if not sucesso:
-                    # Erro na verificação - não mostrar nada ao usuário (silencioso)
-                    print(f"Erro ao verificar atualizações: {dados.get('erro', 'Erro desconhecido')}")
+                    # Se o erro for porque MTA está rodando, não mostrar nada (silencioso)
+                    erro = dados.get('erro', 'Erro desconhecido') if dados else 'Erro desconhecido'
+                    if 'MTA' not in str(erro):
+                        # Outros erros podem ser mostrados em modo debug
+                        print(f"Erro ao verificar atualizações: {erro}")
                     return
                 
                 # Verificar se há atualização
@@ -568,13 +579,31 @@ class CalculadoraReparosGUI:
         def check():
             try:
                 atualizador = AtualizadorApp()
+                
+                # Verificar se MTA está rodando ANTES de tentar verificar atualizações
+                if atualizador.mta_esta_rodando():
+                    self.root.after(0, lambda: self.mostrar_aviso_mta())
+                    self.root.after(0, lambda: self.btn_atualizar.config(state='normal', text="🔄 Verificar Atualizações"))
+                    return
+                
                 resultado = atualizador.verificar_atualizacao_completo()
                 
                 self.root.after(0, lambda: self.processar_resultado_verificacao(resultado, atualizador))
             except Exception as e:
                 self.root.after(0, lambda: self.mostrar_erro_verificacao(f"Erro: {e}"))
+                self.root.after(0, lambda: self.btn_atualizar.config(state='normal', text="🔄 Verificar Atualizações"))
         
         threading.Thread(target=check, daemon=True).start()
+    
+    def mostrar_aviso_mta(self):
+        """Mostra aviso quando MTA está rodando"""
+        messagebox.showwarning(
+            "⚠️ MTA Detectado",
+            "O MTA (Multi Theft Auto) está rodando no momento.\n\n"
+            "Para evitar problemas com o anti-cheat do servidor, "
+            "a verificação de atualizações foi cancelada.\n\n"
+            "Por favor, feche o MTA antes de verificar atualizações."
+        )
     
     def processar_resultado_verificacao(self, resultado, atualizador):
         """Processa o resultado da verificação"""

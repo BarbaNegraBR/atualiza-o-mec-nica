@@ -14,20 +14,76 @@ import subprocess
 from pathlib import Path
 from tkinter import messagebox
 
+# Tentar importar psutil, mas ter alternativa se não estiver disponível
+try:
+    import psutil
+    PSUTIL_DISPONIVEL = True
+except ImportError:
+    PSUTIL_DISPONIVEL = False
+
 class AtualizadorApp:
     def __init__(self):
         # Configurações do repositório
         self.usuario_github = "BarbaNegraBR"
         self.repositorio = "atualiza-o-mec-nica"
-        self.versao_atual = "2.0.1"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json (SEM o "v")
+        self.versao_atual = "2.0.2"  # Versão atual do app - ATUALIZE SEMPRE QUE MUDAR O versao.json (SEM o "v")
         
         # URLs
         self.url_versao = f"https://raw.githubusercontent.com/{self.usuario_github}/{self.repositorio}/master/versao.json"
         self.url_download_base = f"https://github.com/{self.usuario_github}/{self.repositorio}/releases/download"
+    
+    def mta_esta_rodando(self):
+        """Verifica se o MTA (Multi Theft Auto) está rodando para evitar conflito com anti-cheat"""
+        try:
+            processos_mta = [
+                'multi theft auto.exe',
+                'mtasa.exe',
+                'mta.exe',
+                'gta_sa.exe',  # GTA San Andreas original
+                'gta-vc.exe',  # GTA Vice City
+                'gta3.exe'     # GTA III
+            ]
+            
+            if PSUTIL_DISPONIVEL:
+                # Usar psutil se disponível (mais eficiente)
+                for proc in psutil.process_iter(['pid', 'name']):
+                    try:
+                        nome_proc = proc.info['name'].lower() if proc.info['name'] else ''
+                        if any(mta_proc in nome_proc for mta_proc in processos_mta):
+                            return True
+                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                        continue
+            else:
+                # Alternativa sem psutil usando tasklist (Windows)
+                if sys.platform == 'win32':
+                    try:
+                        # Usar método que não cria janela oculta (evita detecção de anti-cheat)
+                        resultado = subprocess.run(
+                            ['tasklist', '/FO', 'CSV', '/NH'],
+                            capture_output=True,
+                            text=True,
+                            timeout=5
+                        )
+                        if resultado.returncode == 0:
+                            linhas = resultado.stdout.lower()
+                            for proc in processos_mta:
+                                if proc.lower() in linhas:
+                                    return True
+                    except Exception:
+                        pass
+            
+            return False
+        except Exception:
+            # Se houver erro ao verificar, assumir que não está rodando para não bloquear atualizações
+            return False
         
     def verificar_atualizacao(self):
         """Verifica se há atualização disponível"""
         try:
+            # Se MTA está rodando, não verificar para evitar ban
+            if self.mta_esta_rodando():
+                return False, None, None, None
+            
             response = requests.get(self.url_versao, timeout=5)
             if response.status_code == 200:
                 dados = response.json()
@@ -48,6 +104,13 @@ class AtualizadorApp:
     def verificar_atualizacao_completo(self):
         """Verifica atualização com informações detalhadas para debug"""
         try:
+            # Se MTA está rodando, não verificar atualizações automaticamente para evitar ban
+            if self.mta_esta_rodando():
+                return False, {
+                    'erro': 'MTA está rodando',
+                    'detalhes': 'Verificação de atualização cancelada para evitar conflito com anti-cheat. Feche o MTA para verificar atualizações.'
+                }
+            
             # Verificar versão no GitHub
             response = requests.get(self.url_versao, timeout=10)
             if response.status_code != 200:
@@ -217,6 +280,14 @@ class AtualizadorApp:
     def instalar_atualizacao(self, caminho_novo_exe):
         """Instala a atualização baixada"""
         try:
+            # Verificar se MTA está rodando - se sim, cancelar atualização para evitar ban
+            if self.mta_esta_rodando():
+                messagebox.showwarning(
+                    "MTA Detectado",
+                    "O MTA está rodando. Por favor, feche o jogo antes de atualizar para evitar problemas com o anti-cheat."
+                )
+                return False
+            
             # Obter caminho do executável atual
             if hasattr(sys, 'frozen'):
                 # Executável compilado
@@ -234,14 +305,33 @@ class AtualizadorApp:
             exe_backup = pasta_atual / f"{exe_atual_path.stem}_backup.exe"
             exe_final = pasta_atual / exe_atual_path.name
             
+            # Verificar se MTA ainda está rodando antes de criar o script
+            if self.mta_esta_rodando():
+                messagebox.showwarning(
+                    "MTA Detectado",
+                    "O MTA está rodando. Por favor, feche o jogo antes de atualizar para evitar problemas com o anti-cheat."
+                )
+                return False
+            
+            # Usar método mais seguro - não usar taskkill /F (força bruta)
+            # Em vez disso, pedir ao usuário para fechar manualmente ou usar método suave
             with open(script_atualizacao, 'w', encoding='utf-8') as f:
                 f.write(f'''@echo off
 chcp 65001 >nul
 echo Aguardando fechamento do aplicativo...
 timeout /t 3 /nobreak >nul
 
-echo Fechando aplicativo...
-taskkill /F /IM "{exe_atual_path.name}" 2>nul
+echo Fechando aplicativo suavemente...
+REM Tentar fechar normalmente primeiro (sem /F para evitar detecção de anti-cheat)
+taskkill /IM "{exe_atual_path.name}" >nul 2>&1
+timeout /t 2 /nobreak >nul
+
+REM Se ainda estiver rodando, tentar novamente (sem forçar)
+taskkill /IM "{exe_atual_path.name}" >nul 2>&1
+timeout /t 1 /nobreak >nul
+
+REM Só usar /F se realmente necessário e se MTA não estiver rodando
+REM taskkill /F /IM "{exe_atual_path.name}" 2>nul
 timeout /t 1 /nobreak >nul
 
 echo Fazendo backup...
@@ -266,9 +356,9 @@ if exist "{exe_final}" (
 )
 ''')
             
-            # Executar script de atualização
-            subprocess.Popen([str(script_atualizacao)], shell=True, 
-                           creationflags=subprocess.CREATE_NO_WINDOW)
+            # Executar script de atualização SEM CREATE_NO_WINDOW (comportamento suspeito para anti-cheat)
+            # Usar método padrão que não esconde a janela
+            subprocess.Popen([str(script_atualizacao)], shell=True)
             return True
             
         except Exception as e:
