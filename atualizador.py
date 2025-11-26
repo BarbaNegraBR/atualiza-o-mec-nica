@@ -16,9 +16,10 @@ from tkinter import messagebox
 
 # Tentar importar psutil, mas ter alternativa se não estiver disponível
 try:
-    import psutil
+    import psutil  # type: ignore
     PSUTIL_DISPONIVEL = True
 except ImportError:
+    psutil = None  # type: ignore
     PSUTIL_DISPONIVEL = False
 
 class AtualizadorApp:
